@@ -20,22 +20,25 @@ PENALTY_PER_HINT_IN_HOURS = 2.0
 # "Final" level, the advance to which encodes that the team finished
 FINAL_LEVEL = "51"
 # List of team names as strings
-TEAM_NAMES = []
+TEAM_NAMES: list["TeamName"] = []
 # Path to hunt event csv taken from the website
 CSV_FILE_PATH = r"C:\Users\username\Downloads\hunt.huntevent.csv"
 
+TeamName = str
+
 
 def parse_timestamp(timestamp: str) -> datetime:
-    return datetime.strptime(timestamp,
-                             "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    return datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").replace(
+        tzinfo=timezone.utc
+    )
 
 
-def main(csv_file):
+def main(csv_file: str) -> None:
     teams = TEAM_NAMES
-    team_raw_times = defaultdict(float)
-    team_running_totals = defaultdict(float)
-    team_hints_requested = defaultdict(int)
-    team_levels = defaultdict(int)
+    team_raw_times: dict[TeamName, float] = defaultdict(float)
+    team_running_totals: dict[TeamName, float] = defaultdict(float)
+    team_hints_requested: dict[TeamName, int] = defaultdict(int)
+    team_levels: dict[TeamName, int] = defaultdict(int)
 
     with Path(csv_file).open(encoding="utf-8") as f:
         csv_reader = csv.DictReader(f)
@@ -64,5 +67,5 @@ def main(csv_file):
     print("Team levels completed", team_levels)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(CSV_FILE_PATH)

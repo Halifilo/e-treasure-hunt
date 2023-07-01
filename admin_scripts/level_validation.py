@@ -23,6 +23,7 @@ import os
 import re
 import zipfile
 from pathlib import Path
+from typing import TextIO
 
 CONTENT_TYPES = {
     ".jpeg": "image/jpeg",
@@ -31,7 +32,7 @@ CONTENT_TYPES = {
 }
 
 
-def unzip_all():
+def unzip_all() -> None:
     for filename in os.listdir(ALL_LEVELS_DIR):
         if filename.endswith(".zip"):
             folder_path: Path = ALL_LEVELS_DIR / filename[:-4]
@@ -40,7 +41,7 @@ def unzip_all():
                     zip_ref.extractall(folder_path)
 
 
-def validate_format():
+def validate_format() -> None:
     count = 0
     for filename in os.listdir(ALL_LEVELS_DIR):
         dir_path = ALL_LEVELS_DIR / filename
@@ -85,8 +86,14 @@ def validate_format():
                 for image in images:
                     image_size = os.path.getsize(image)
                     if image_size > 3 * 1000 * 1000:  # ~3 MB
-                        print("Image", image, "is too big in",
-                              filename, "size = ", f"{image_size:,}")
+                        print(
+                            "Image",
+                            image,
+                            "is too big in",
+                            filename,
+                            "size = ",
+                            f"{image_size:,}",
+                        )
 
                 for i in range(1, 5):
                     if not images[i].name.startswith("hint"):
@@ -95,7 +102,7 @@ def validate_format():
     print("Analyzed", count, "levels")
 
 
-def check_coord(coord: str, coord_name, filename):
+def check_coord(coord: str, coord_name: str, filename: str) -> None:
     lat = float(coord)
     if not lat:
         print("No", coord_name, "for level", filename)
@@ -110,7 +117,7 @@ def check_coord(coord: str, coord_name, filename):
         print("More than 7 digits for", coord_name, "for level", filename, ":", coord)
 
 
-def check_json(f, filename):
+def check_json(f: TextIO, filename: str) -> None:
     json_data = json.load(f)
     if not len(json_data["name"]) > 0:
         print("No name for level", filename)
@@ -129,11 +136,13 @@ def check_json(f, filename):
         print("  warning: Small tolerance of", tol, "for level", filename)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("input_directory",
-                           help="Path to a directory containing the (possibly zipped) "
-                                "levels to be examined")
+    argparser.add_argument(
+        "input_directory",
+        help="Path to a directory containing the (possibly zipped) "
+        "levels to be examined",
+    )
     args = argparser.parse_args()
     ALL_LEVELS_DIR = Path(args.input_directory)
     assert ALL_LEVELS_DIR.exists()
