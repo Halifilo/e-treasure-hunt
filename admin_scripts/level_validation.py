@@ -9,6 +9,13 @@ Other checks are for admin-y things like:
   structure of the level for the GM's use)
   being smaller than blurb.txt files (which are supposed to be a hunter-consumable
   précis of the level answer/concept once they've solved it)
+
+The checking for the names of the images is stricter than the server requires.
+The server will consider the images in alphabetical order, so (say) 1-image.jpg,
+2-image.jpg, ... is just a valid a scheme as clue.png, hint1.png, etc.
+However, this strict checking does serve to remind the admin to make sure that the
+level setter has not come up with their own novel image-naming scheme that wouldn't
+work once the server considers the images alphabetically.
 """
 import argparse
 import json

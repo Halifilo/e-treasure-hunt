@@ -1,6 +1,13 @@
 """Web scraper for the hunt website to download unlocked levels
 
-Useful for archiving levels if the previous admin forgot to."""
+Useful for archiving levels if the previous admin forgot to, and
+you don't currently have admin credentials.
+
+If you do have admin credentials, better to download full levels using the
+REST API, like this:
+
+`curl -u admin:adminpasswordhere http://localhost:8000/api/levels/1`
+"""
 import argparse
 import json
 import sys
