@@ -1,4 +1,4 @@
-"""Parse the hunt events CSV downloaded from the hunt website to see who won by various metrics
+"""Parse the hunt events CSV from the hunt website to see who won by various metrics
 
 ADV = team advanced to that level
 REQ = team requested a hint
@@ -7,11 +7,12 @@ Edit the values of the constants at the top of this file for your purposes, e.g.
 START_TIME, TEAM_NAMES, etc.
 """
 import csv
-import datetime
 from collections import defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
 
 # Start time
-START_TIME = datetime.datetime.strptime("2000-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+START_TIME = datetime.strptime("2000-01-01 00:00:00+0000", "%Y-%m-%d %H:%M:%S%z")
 # 2.0 hours per hint
 # N.B. assumes all hints _requested_ take a penalty,
 # script will need editing if you want to only account for hints _used_
@@ -24,6 +25,11 @@ TEAM_NAMES = []
 CSV_FILE_PATH = r"C:\Users\username\Downloads\hunt.huntevent.csv"
 
 
+def parse_timestamp(timestamp: str) -> datetime:
+    return datetime.strptime(timestamp,
+                             "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+
+
 def main(csv_file):
     teams = TEAM_NAMES
     team_raw_times = defaultdict(float)
@@ -31,7 +37,7 @@ def main(csv_file):
     team_hints_requested = defaultdict(int)
     team_levels = defaultdict(int)
 
-    with open(csv_file, encoding="utf-8") as f:
+    with Path(csv_file).open(encoding="utf-8") as f:
         csv_reader = csv.DictReader(f)
 
         for line in csv_reader:
@@ -46,7 +52,7 @@ def main(csv_file):
                 # Final level
                 if line["level"] == FINAL_LEVEL:
                     timestamp = line["time"].split(".")[0]
-                    finish_time = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+                    finish_time = parse_timestamp(timestamp)
                     time_taken = (finish_time - START_TIME).total_seconds() / 60 / 60
                     print(time_taken)
                     team_running_totals[team] += time_taken
